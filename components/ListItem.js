@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import {mediaUrl} from '../utils/app-config';
 
 const ListItem = (props) => {
   return (
@@ -14,7 +15,9 @@ const ListItem = (props) => {
       <View style={styles.box}>
         <Image
           style={styles.Image}
-          source={{uri: props.singleMedia.thumbnails.w160}}
+          source={{
+            uri: mediaUrl + props.singleMedia.thumbnails.w160,
+          }}
         />
         <View style={styles.View}>
           <Text style={styles.Text}>{props.singleMedia.title}</Text>
