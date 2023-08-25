@@ -25,7 +25,7 @@ const ListItem = (props) => {
   );
 };
 
-ListItem.PropTypes = {
+ListItem.propTypes = {
   singleMedia: PropTypes.object,
 };
 
