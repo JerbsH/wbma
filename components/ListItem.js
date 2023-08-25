@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   Image: {
     margin: 5,
     width: '45%',
-    height: 'auto',
+    height: 200,
   },
   View: {
     width: '50%',
