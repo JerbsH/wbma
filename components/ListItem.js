@@ -1,11 +1,4 @@
-import {
-  Image,
-  Platform,
-  Text,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-} from 'react-native';
+import {Image, Text, TouchableOpacity, View, StyleSheet} from 'react-native';
 import PropTypes from 'prop-types';
 
 const ListItem = (props) => {
@@ -18,44 +11,44 @@ const ListItem = (props) => {
         />
         <View style={styles.View}>
           <Text style={styles.Text}>{props.singleMedia.title}</Text>
-          <Text>{props.singleMedia.description}</Text>
+          <Text style={{color: '#fff', textAlign: 'justify', fontSize: 11}}>{props.singleMedia.description}</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 };
 
-ListItem.PropTypes = {
+ListItem.propTypes = {
   singleMedia: PropTypes.object,
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   TouchableOpacity: {
-    marginVertical: 2,
+    margin: 2,
   },
   box: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'lightgrey',
+    backgroundColor: 'darkblue',
+    borderRadius: 15,
   },
   Image: {
+    borderRadius: 15,
     margin: 5,
     width: '45%',
     height: 'auto',
   },
   View: {
-    width: '50%',
+    width: '45%',
     margin: 5,
   },
   Text: {
+    textAlign: 'center',
+    color: '#fff',
     height: 'auto',
     width: '100%',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
 
