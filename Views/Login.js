@@ -5,6 +5,7 @@ import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginForm from './../components/LoginForm';
 import {useUser} from '../hook/ApiHooks';
+import RegisterForm from '../components/RegisterForm';
 
 const Login = ({navigation}) => {
   // props is needed for navigation
@@ -33,6 +34,7 @@ const Login = ({navigation}) => {
     <View style={styles.container}>
       <Text>Login</Text>
       <LoginForm />
+      <RegisterForm />
     </View>
   );
 };

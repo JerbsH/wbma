@@ -28,7 +28,6 @@ const LoginForm = () => {
       setUser(loginResponse.user);
     } catch (error) {
       console.error(error);
-      // TODO: notify user about failed login?
     }
   };
 
@@ -42,6 +41,7 @@ const LoginForm = () => {
         render={({field: {onChange, onBlur, value}}) => (
           <TextInput
             placeholder="Username"
+            autoCapitalize="none"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
