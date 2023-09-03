@@ -20,7 +20,7 @@ const RegisterForm = () => {
   const register = async (userData) => {
     try {
       await postUser(userData);
-      alert('User created');
+      alert('Created user ' + userData.username);
       reset();
     } catch (error) {
       console.log(error);
