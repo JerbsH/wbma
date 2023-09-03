@@ -9,6 +9,7 @@ const RegisterForm = () => {
     control,
     handleSubmit,
     formState: {errors},
+    reset,
   } = useForm({
     defaultValues: {
       username: '',
@@ -18,8 +19,9 @@ const RegisterForm = () => {
 
   const register = async (userData) => {
     try {
-      console.log(userData);
       await postUser(userData);
+      alert('User created');
+      reset();
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +77,6 @@ const RegisterForm = () => {
         render={({field: {onChange, onBlur, value}}) => (
           <TextInput
             placeholder="Email"
-            secureTextEntry={true}
             autoCapitalize="none"
             onBlur={onBlur}
             onChangeText={onChange}
@@ -94,7 +95,6 @@ const RegisterForm = () => {
         render={({field: {onChange, onBlur, value}}) => (
           <TextInput
             placeholder="Full name"
-            secureTextEntry={true}
             autoCapitalize="none"
             onBlur={onBlur}
             onChangeText={onChange}
