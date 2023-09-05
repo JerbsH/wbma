@@ -28,7 +28,9 @@ const Profile = (props) => {
   const loadAvatar = async () => {
     try {
       const avatars = await getFilesByTag('avatar_' + user.user_id);
-      setAvatar(mediaUrl + avatars.pop().filename);
+      if (avatars.length > 0) {
+        setAvatar(mediaUrl + avatars.pop().filename);
+      }
     } catch (error) {
       console.error(error);
     }
