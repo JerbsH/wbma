@@ -1,5 +1,10 @@
 import React, {useContext, useEffect} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Keyboard} from 'react-native';
+import {
+  TouchableOpacity,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import PropTypes from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -36,23 +41,15 @@ const Login = ({navigation}) => {
       style={{flex: 1}}
       activeOpacity={1}
     >
-      <View style={styles.container}>
-        <Text>Login</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <LoginForm />
         <RegisterForm />
-      </View>
+      </KeyboardAvoidingView>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 Login.propTypes = {
   navigation: PropTypes.object,

@@ -1,16 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  Button,
-  Image,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-} from 'react-native';
 import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTag} from '../hook/ApiHooks';
 import {mediaUrl} from '../utils/app-config';
+import {Button, Card, Icon, ListItem} from '@rneui/themed';
 
 const Profile = (props) => {
   const [avatar, setAvatar] = useState('http://placekitten.com/640');
@@ -40,46 +33,22 @@ const Profile = (props) => {
   }, []);
   return (
     <>
-      <SafeAreaView style={styles.container}>
-        <Text>Profile view</Text>
-        <Text>{user.username}</Text>
-        <Image style={{height: 200, width: 150}} source={{uri: avatar}} />
-        <Text>{user.email}</Text>
-        <Text>{user.full_name}</Text>
+      <Card>
+        <Card.Title>{user.username}</Card.Title>
+        <Card.Image source={{uri: avatar}} />
+        <ListItem>
+          <Icon name="email"></Icon>
+          <ListItem.Title>{user.email}</ListItem.Title>
+        </ListItem>
+        <ListItem>
+          <Icon name="person"></Icon>
+          <ListItem.Title>{user.full_name}</ListItem.Title>
+        </ListItem>
+        <Card.Divider></Card.Divider>
         <Button title="Log out!" onPress={logOut}></Button>
-      </SafeAreaView>
+      </Card>
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  TouchableOpacity: {
-    marginVertical: 2,
-  },
-  box: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'lightgrey',
-  },
-  Image: {
-    margin: 5,
-    width: '45%',
-    height: 'auto',
-  },
-  View: {
-    width: '50%',
-    margin: 5,
-  },
-  Text: {
-    height: 'auto',
-    width: '100%',
-  },
-});
 
 export default Profile;

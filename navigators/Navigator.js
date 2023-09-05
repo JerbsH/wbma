@@ -34,7 +34,7 @@ const Stackscreen = () => {
           <Stack.Screen name="Single" component={Single} />
         </>
       ) : (
-        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Very Cool Header Text" component={Login} />
       )}
     </Stack.Navigator>
   );
