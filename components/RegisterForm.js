@@ -5,7 +5,7 @@ import {useForm, Controller} from 'react-hook-form';
 import {Button, Card, Input} from '@rneui/themed';
 
 const RegisterForm = () => {
-  const {postUser} = useUser();
+  const {postUser, checkUsername} = useUser();
   const {
     control,
     handleSubmit,
@@ -16,6 +16,7 @@ const RegisterForm = () => {
       username: '',
       password: '',
     },
+    mode: 'onBlur',
   });
 
   const register = async (userData) => {
@@ -33,10 +34,20 @@ const RegisterForm = () => {
       <Card.Title style={{fontSize: 15}}>REGISTER</Card.Title>
 
       {errors.username && <Text style={{color: 'red'}}>This is required.</Text>}
+      <Text style={{color: 'red'}}>{errors.username?.message}</Text>
       <Controller
         control={control}
         rules={{
           required: true,
+          validate: async (value) => {
+            try {
+              const isAvailable = await checkUsername(value);
+              console.log('username available? ', isAvailable);
+              return isAvailable ? isAvailable : 'Username taken';
+            } catch (error) {
+              console.error(error);
+            }
+          },
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
@@ -45,6 +56,7 @@ const RegisterForm = () => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            errorMessage={errors.username?.message}
           />
         )}
         name="username"
@@ -110,7 +122,7 @@ const RegisterForm = () => {
         buttonStyle={{
           borderRadius: 10,
         }}
-        title="Submit"
+        title="Register"
         onPress={handleSubmit(register)}
       />
     </Card>

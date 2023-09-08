@@ -64,7 +64,16 @@ const useUser = () => {
     return await doFetch(apiUrl + 'users', options);
   };
 
-  return {getUserByToken, postUser};
+  const checkUsername = async (username) => {
+    try {
+      const response = await doFetch(apiUrl + 'users/username/' + username);
+      return response.available;
+    } catch (error) {
+      throw new Error('checkUsername error: ', error.message);
+    }
+  };
+
+  return {getUserByToken, postUser, checkUsername};
 };
 
 const useTag = () => {

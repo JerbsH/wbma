@@ -75,7 +75,7 @@ const LoginForm = () => {
         buttonStyle={{
           borderRadius: 10,
         }}
-        title="Submit"
+        title="Login"
         onPress={handleSubmit(logIn)}
       />
     </Card>

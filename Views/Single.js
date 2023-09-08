@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, Text} from 'react-native';
+import {Text} from 'react-native';
 import {PropTypes} from 'prop-types';
 import {mediaUrl} from '../utils/app-config';
 import {Card, Image} from '@rneui/themed';
