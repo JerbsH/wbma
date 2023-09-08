@@ -1,4 +1,3 @@
-import {Text} from 'react-native';
 import React, {useContext} from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -36,11 +35,10 @@ const LoginForm = () => {
     <Card containerStyle={{borderRadius: 10}}>
       <Card.Title style={{fontSize: 15}}>LOGIN</Card.Title>
 
-      {errors.username && <Text style={{color: 'red'}}>This is required.</Text>}
       <Controller
         control={control}
         rules={{
-          required: true,
+          required: {value: true, message: 'is required'},
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
@@ -49,6 +47,7 @@ const LoginForm = () => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            errorMessage={errors.username?.message}
           />
         )}
         name="username"
@@ -58,6 +57,7 @@ const LoginForm = () => {
         control={control}
         rules={{
           maxLength: 100,
+          required: {value: true, message: 'is required'},
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
@@ -67,6 +67,7 @@ const LoginForm = () => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            errorMessage={errors.password?.message}
           />
         )}
         name="password"

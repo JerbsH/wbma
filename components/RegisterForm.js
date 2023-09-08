@@ -1,4 +1,3 @@
-import {Text} from 'react-native';
 import React from 'react';
 import {useUser} from '../hook/ApiHooks';
 import {useForm, Controller} from 'react-hook-form';
@@ -9,6 +8,7 @@ const RegisterForm = () => {
   const {
     control,
     handleSubmit,
+    getValues,
     formState: {errors},
     reset,
   } = useForm({
@@ -33,12 +33,11 @@ const RegisterForm = () => {
     <Card containerStyle={{borderRadius: 10}}>
       <Card.Title style={{fontSize: 15}}>REGISTER</Card.Title>
 
-      {errors.username && <Text style={{color: 'red'}}>This is required.</Text>}
-      <Text style={{color: 'red'}}>{errors.username?.message}</Text>
       <Controller
         control={control}
         rules={{
-          required: true,
+          required: {value: true, message: 'is required'},
+          minLength: {value: 3, message: 'minimum length is 3'},
           validate: async (value) => {
             try {
               const isAvailable = await checkUsername(value);
@@ -62,12 +61,11 @@ const RegisterForm = () => {
         name="username"
       />
 
-      {errors.password && <Text style={{color: 'red'}}>This is required.</Text>}
       <Controller
         control={control}
         rules={{
-          maxLength: 100,
-          required: true,
+          required: {value: true, message: 'is required'},
+          minLength: {value: 6, message: 'minimum length is 6'},
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
@@ -77,17 +75,44 @@ const RegisterForm = () => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            errorMessage={errors.password?.message}
           />
         )}
         name="password"
       />
 
-      {errors.email && <Text style={{color: 'red'}}>This is required.</Text>}
       <Controller
         control={control}
         rules={{
-          maxLength: 100,
-          required: true,
+          required: {value: true, message: 'is required'},
+          validate: (value) => {
+            const {password} = getValues();
+            return value === password ? true : 'Passwords do not match';
+          },
+        }}
+        render={({field: {onChange, onBlur, value}}) => (
+          <Input
+            placeholder="Confirm Password"
+            secureTextEntry={true}
+            autoCapitalize="none"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            errorMessage={errors.confirm_password?.message}
+          />
+        )}
+        name="confirm_password"
+      />
+
+      <Controller
+        control={control}
+        rules={{
+          required: {value: true, message: 'is required'},
+          pattern: {
+            // TODO: add better regexp for email
+            value: /@/,
+            message: 'must be a valid email',
+          },
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
@@ -96,6 +121,7 @@ const RegisterForm = () => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            errorMessage={errors.email?.message}
           />
         )}
         name="email"
@@ -105,6 +131,7 @@ const RegisterForm = () => {
         control={control}
         rules={{
           maxLength: 100,
+          minLength: {value: 3, message: 'minimum length is 3'},
         }}
         render={({field: {onChange, onBlur, value}}) => (
           <Input
@@ -113,6 +140,7 @@ const RegisterForm = () => {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            errorMessage={errors.full_name?.message}
           />
         )}
         name="full_name"
