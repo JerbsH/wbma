@@ -1,33 +1,40 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {useUser} from '../hook/ApiHooks';
 import {useForm, Controller} from 'react-hook-form';
 import {Button, Card, Input} from '@rneui/themed';
 import {Alert} from 'react-native';
 import {PropTypes} from 'prop-types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {MainContext} from '../contexts/MainContext';
 
-const RegisterForm = ({setToggleRegister}) => {
-  const {postUser, checkUsername} = useUser();
+const ProfileForm = ({user}) => {
+  const {putUser, checkUsername, getUserByToken} = useUser();
+  const {setIsLoggedIn} = useContext(MainContext);
   const {
     control,
     handleSubmit,
     getValues,
     formState: {errors},
-    reset,
   } = useForm({
-    defaultValues: {
-      username: '',
-      password: '',
-    },
+    defaultValues: {...user, password: '', confirm_password: ''},
     mode: 'onBlur',
   });
 
-  const register = async (userData) => {
+  const update = async (updateData) => {
     try {
-      delete userData.confirm_password;
-      const registerResult = await postUser(userData);
-      Alert.alert('Success', registerResult.message);
-      reset();
-      setToggleRegister(false);
+      delete updateData.confirm_password;
+      // poistetaan tyhjät arvot
+      for (const [i, value] of Object.entries(updateData)) {
+        if (value === '') {
+          delete updateData[i];
+        }
+      }
+      const token = await AsyncStorage.getItem('userToken');
+      const updateResult = await putUser(updateData, token);
+      Alert.alert('Success', updateResult.message);
+      // päivitä käyttäjä ruudulla
+      const userData = await getUserByToken(token);
+      setIsLoggedIn(userData);
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -35,15 +42,17 @@ const RegisterForm = ({setToggleRegister}) => {
 
   return (
     <Card containerStyle={{borderRadius: 10}}>
-      <Card.Title style={{fontSize: 15}}>REGISTER</Card.Title>
+      <Card.Title style={{fontSize: 15}}>UPDATE</Card.Title>
 
       <Controller
         control={control}
         rules={{
-          required: {value: true, message: 'is required'},
           minLength: {value: 3, message: 'minimum length is 3'},
           validate: async (value) => {
             try {
+              if (value.length > 3) {
+                return;
+              }
               const isAvailable = await checkUsername(value);
               console.log('username available? ', isAvailable);
               return isAvailable ? isAvailable : 'Username taken';
@@ -68,7 +77,6 @@ const RegisterForm = ({setToggleRegister}) => {
       <Controller
         control={control}
         rules={{
-          required: {value: true, message: 'is required'},
           minLength: {value: 6, message: 'minimum length is 6'},
         }}
         render={({field: {onChange, onBlur, value}}) => (
@@ -88,9 +96,11 @@ const RegisterForm = ({setToggleRegister}) => {
       <Controller
         control={control}
         rules={{
-          required: {value: true, message: 'is required'},
           validate: (value) => {
             const {password} = getValues();
+            if (password.length) {
+              return;
+            }
             return value === password ? true : 'Passwords do not match';
           },
         }}
@@ -111,7 +121,6 @@ const RegisterForm = ({setToggleRegister}) => {
       <Controller
         control={control}
         rules={{
-          required: {value: true, message: 'is required'},
           pattern: {
             value: /\S+@\S+\.\S+$/,
             message: 'must be a valid email',
@@ -153,15 +162,15 @@ const RegisterForm = ({setToggleRegister}) => {
         buttonStyle={{
           borderRadius: 10,
         }}
-        title="Register"
-        onPress={handleSubmit(register)}
+        title="Update"
+        onPress={handleSubmit(update)}
       />
     </Card>
   );
 };
 
-RegisterForm.propTypes = {
-  setToggleRegister: PropTypes.func,
+ProfileForm.propTypes = {
+  user: PropTypes.object,
 };
 
-export default RegisterForm;
+export default ProfileForm;

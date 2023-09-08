@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useTag} from '../hook/ApiHooks';
 import {mediaUrl} from '../utils/app-config';
 import {Button, Card, Icon, ListItem} from '@rneui/themed';
+import ProfileForm from '../components/ProfileForm';
+import {ScrollView} from 'react-native';
 
 const Profile = (props) => {
   const [avatar, setAvatar] = useState('http://placekitten.com/640');
@@ -33,20 +35,29 @@ const Profile = (props) => {
   }, []);
   return (
     <>
-      <Card>
-        <Card.Title>{user.username}</Card.Title>
-        <Card.Image source={{uri: avatar}} />
-        <ListItem>
-          <Icon name="email"></Icon>
-          <ListItem.Title>{user.email}</ListItem.Title>
-        </ListItem>
-        <ListItem>
-          <Icon name="person"></Icon>
-          <ListItem.Title>{user.full_name}</ListItem.Title>
-        </ListItem>
-        <Card.Divider></Card.Divider>
-        <Button title="Log out!" onPress={logOut}></Button>
-      </Card>
+      <ScrollView>
+        <Card containerStyle={{borderRadius: 10}}>
+          <Card.Title>{user.username}</Card.Title>
+          <Card.Image source={{uri: avatar}} />
+          <ListItem>
+            <Icon name="email"></Icon>
+            <ListItem.Title>{user.email}</ListItem.Title>
+          </ListItem>
+          <ListItem>
+            <Icon name="person"></Icon>
+            <ListItem.Title>{user.full_name}</ListItem.Title>
+          </ListItem>
+          <Card.Divider></Card.Divider>
+          <Button
+            title="Log out!"
+            onPress={logOut}
+            buttonStyle={{
+              borderRadius: 10,
+            }}
+          ></Button>
+          <ProfileForm user={user} />
+        </Card>
+      </ScrollView>
     </>
   );
 };
