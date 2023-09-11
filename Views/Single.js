@@ -2,7 +2,7 @@ import React from 'react';
 import {Text} from 'react-native';
 import {PropTypes} from 'prop-types';
 import {mediaUrl} from '../utils/app-config';
-import {Card, Image} from '@rneui/themed';
+import {Card, Icon, Image, ListItem} from '@rneui/themed';
 
 const Single = ({route, navigation}) => {
   const singleMedia = route.params;
@@ -14,10 +14,22 @@ const Single = ({route, navigation}) => {
         }}
         containerStyle={{width: '100%', height: 325}}
       ></Image>
-      <Card.Title>{singleMedia.title}</Card.Title>
-      <Text>Description: {singleMedia.description}</Text>
-      <Text>Uploaded: {singleMedia.time_added.slice(0, -14)}</Text>
-      <Text>Type: {singleMedia.mime_type}</Text>
+      <ListItem>
+        <Icon name="chat"></Icon>
+        <Text>{singleMedia.title}</Text>
+      </ListItem>
+      <ListItem>
+        <Icon name="list"></Icon>
+        <Text>Description: {singleMedia.description}</Text>
+      </ListItem>
+      <ListItem>
+        <Icon name="event"></Icon>
+        <Text>Uploaded: {singleMedia.time_added.slice(0, -14)}</Text>
+      </ListItem>
+      <ListItem>
+        <Icon name="person"></Icon>
+        <Text>{singleMedia.user_id}</Text>
+      </ListItem>
     </Card>
   );
 };

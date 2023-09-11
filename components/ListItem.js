@@ -12,9 +12,10 @@ const ListItem = ({singleMedia, navigation}) => {
             uri: mediaUrl + singleMedia.thumbnails.w160,
           }}
         ></Avatar>
-
-        <RNEListItem.Title>{singleMedia.title}</RNEListItem.Title>
-        <RNEListItem.Subtitle>{singleMedia.description}</RNEListItem.Subtitle>
+        <RNEListItem.Content>
+          <RNEListItem.Title>{singleMedia.title}</RNEListItem.Title>
+          <RNEListItem.Subtitle>{singleMedia.description}</RNEListItem.Subtitle>
+        </RNEListItem.Content>
         <Button
           title="View"
           onPress={() => {
