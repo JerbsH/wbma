@@ -1,8 +1,17 @@
 import {Button, Card, Input} from '@rneui/themed';
 import {Controller, useForm} from 'react-hook-form';
 import {StyleSheet} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import {useState} from 'react';
+import {placeholderImage} from '../utils/app-config';
+import {Video} from 'expo-av';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useMedia} from '../hook/ApiHooks';
 
 const Upload = () => {
+  const [image, setImage] = useState(placeholderImage);
+  const [type, setType] = useState('image');
+  const {postMedia} = useMedia();
   const {
     control,
     handleSubmit,
@@ -16,19 +25,61 @@ const Upload = () => {
 
   const upload = async (uploadData) => {
     console.log(uploadData);
+    const formData = new FormData();
+    formData.append('title', uploadData.title);
+    formData.append('description', uploadData.description);
+
+    const fileName = image.split('/').pop();
+    let fileExtension = fileName.split('.').pop();
+    fileExtension = fileExtension === 'jpg' ? 'jpeg' : fileExtension;
+
+    formData.append('file', {
+      uri: image,
+      name: fileName,
+      type: `${type}/${fileExtension}`,
+    });
+
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const response = await postMedia(formData, token);
+      console.log('lataus', response);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const pickImage = async () => {
-    console.log('pickImage');
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      setType(result.assets[0].type);
+    }
   };
 
   return (
     <Card containerStyle={{borderRadius: 10}}>
-      <Card.Image
-        source={{uri: 'https://placekitten.com/300/300'}}
-        style={styles.image}
-        onPress={pickImage}
-      />
+      {type === 'image' ? (
+        <Card.Image
+          source={{uri: image}}
+          style={styles.image}
+          onPress={pickImage}
+        />
+      ) : (
+        <Video
+          source={{uri: image}}
+          style={styles.image}
+          useNativeControls={true}
+          resizeMode="contain"
+        />
+      )}
+
       <Controller
         control={control}
         rules={{
@@ -62,6 +113,14 @@ const Upload = () => {
           />
         )}
         name="description"
+      />
+      <Button
+        buttonStyle={{
+          borderRadius: 10,
+          marginBottom: 10,
+        }}
+        title="Choose Media"
+        onPress={pickImage}
       />
       <Button
         buttonStyle={{
