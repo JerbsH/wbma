@@ -11,7 +11,7 @@ import {useMedia} from '../hook/ApiHooks';
 const Upload = () => {
   const [image, setImage] = useState(placeholderImage);
   const [type, setType] = useState('image');
-  const {postMedia} = useMedia();
+  const {postMedia, loading} = useMedia();
   const {
     control,
     handleSubmit,
@@ -123,6 +123,7 @@ const Upload = () => {
         onPress={pickImage}
       />
       <Button
+        loading={loading}
         buttonStyle={{
           borderRadius: 10,
         }}

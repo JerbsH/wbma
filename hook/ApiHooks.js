@@ -4,6 +4,7 @@ import {doFetch} from '../utils/functions';
 
 const useMedia = () => {
   const [mediaArray, setMediaArray] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const loadMedia = async () => {
     try {
@@ -28,15 +29,18 @@ const useMedia = () => {
   }, []);
 
   const postMedia = async (mediaData, token) => {
+    setLoading(true);
     const options = {
       method: 'POST',
       headers: {'x-access-token': token},
       body: mediaData,
     };
-    return await doFetch(apiUrl + 'media', options);
+    const uploadResult = await doFetch(apiUrl + 'media', options);
+    setLoading(false);
+    return uploadResult;
   };
 
-  return {mediaArray, postMedia};
+  return {mediaArray, postMedia, loading};
 };
 
 const useAuthentication = () => {
