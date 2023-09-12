@@ -3,10 +3,10 @@ import {Controller, useForm} from 'react-hook-form';
 import {Alert, StyleSheet} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import {useContext, useState} from 'react';
-import {placeholderImage} from '../utils/app-config';
+import {appId, placeholderImage} from '../utils/app-config';
 import {Video} from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useMedia} from '../hook/ApiHooks';
+import {useMedia, useTag} from '../hook/ApiHooks';
 import {PropTypes} from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
 
@@ -15,6 +15,8 @@ const Upload = ({navigation}) => {
   const [image, setImage] = useState(placeholderImage);
   const [type, setType] = useState('image');
   const {postMedia, loading} = useMedia();
+  const {postTag} = useTag();
+
   const {
     control,
     handleSubmit,
@@ -48,6 +50,7 @@ const Upload = ({navigation}) => {
       const token = await AsyncStorage.getItem('userToken');
       const response = await postMedia(formData, token);
       console.log('lataus', response);
+      await postTag({file_id: response.file_id, tag: appId}, token);
       setUpdate(!update);
       Alert.alert('Upload', `${response.message} (id: ${response.file_id})`, [
         {
