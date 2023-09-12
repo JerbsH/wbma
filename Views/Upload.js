@@ -1,26 +1,31 @@
 import {Button, Card, Input} from '@rneui/themed';
 import {Controller, useForm} from 'react-hook-form';
-import {StyleSheet} from 'react-native';
+import {Alert, StyleSheet} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {placeholderImage} from '../utils/app-config';
 import {Video} from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useMedia} from '../hook/ApiHooks';
+import {PropTypes} from 'prop-types';
+import {MainContext} from '../contexts/MainContext';
 
-const Upload = () => {
+const Upload = ({navigation}) => {
+  const {update, setUpdate} = useContext(MainContext);
   const [image, setImage] = useState(placeholderImage);
   const [type, setType] = useState('image');
   const {postMedia, loading} = useMedia();
   const {
     control,
     handleSubmit,
+    reset,
     formState: {errors},
   } = useForm({
     defaultValues: {
       title: '',
       description: '',
     },
+    mode: 'onBlur',
   });
 
   const upload = async (uploadData) => {
@@ -43,9 +48,25 @@ const Upload = () => {
       const token = await AsyncStorage.getItem('userToken');
       const response = await postMedia(formData, token);
       console.log('lataus', response);
+      setUpdate(!update);
+      Alert.alert('Upload', `${response.message} (id: ${response.file_id})`, [
+        {
+          text: 'OK',
+          onPress: () => {
+            resetForm();
+            navigation.navigate('Home');
+          },
+        },
+      ]);
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const resetForm = () => {
+    reset();
+    setType('image');
+    setImage(placeholderImage);
   };
 
   const pickImage = async () => {
@@ -55,7 +76,7 @@ const Upload = () => {
       aspect: [4, 3],
     });
 
-    console.log(result);
+    // console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -105,7 +126,6 @@ const Upload = () => {
         render={({field: {onChange, onBlur, value}}) => (
           <Input
             placeholder="Description (optional)"
-            secureTextEntry={true}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -123,6 +143,17 @@ const Upload = () => {
         onPress={pickImage}
       />
       <Button
+        buttonStyle={{
+          borderRadius: 10,
+          marginBottom: 10,
+        }}
+        title="Reset"
+        onPress={resetForm}
+      />
+      <Button
+        disabled={
+          image === placeholderImage || errors.description || errors.title
+        }
         loading={loading}
         buttonStyle={{
           borderRadius: 10,
@@ -143,5 +174,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
+
+Upload.propTypes = {
+  navigation: PropTypes.object,
+};
 
 export default Upload;

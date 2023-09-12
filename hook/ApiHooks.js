@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {apiUrl} from '../utils/app-config';
 import {doFetch} from '../utils/functions';
 
-const useMedia = () => {
+const useMedia = (update) => {
   const [mediaArray, setMediaArray] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,7 @@ const useMedia = () => {
 
   useEffect(() => {
     loadMedia();
-  }, []);
+  }, [update]);
 
   const postMedia = async (mediaData, token) => {
     setLoading(true);
