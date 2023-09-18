@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {ScrollView, Text} from 'react-native';
 import {PropTypes} from 'prop-types';
 import {mediaUrl} from '../utils/app-config';
@@ -16,6 +16,8 @@ const Single = ({route, navigation}) => {
   const {user} = useContext(MainContext);
   const {getUserById} = useUser();
   const {postFavourite, getFavouritesById, deleteFavourite} = useFavourite();
+
+  const videoRef = useRef(null);
 
   const {
     title,
@@ -94,11 +96,29 @@ const Single = ({route, navigation}) => {
     }
   };
 
+  const showVideoInFullscreen = async () => {
+    try {
+      await videoRef.current.presentFullscreenPlayer();
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   useEffect(() => {
     unlockOrientation();
     fetchOwner();
 
+    // fullscreen video on landscape
+    const orientSub = ScreenOrientation.addOrientationChangeListener(
+      (event) => {
+        if (event.orientationInfo.orientation > 2) {
+          showVideoInFullscreen();
+        }
+      },
+    );
+
     return () => {
+      ScreenOrientation.removeOrientationChangeListener(orientSub);
       lockOrientation();
     };
   }, []);
@@ -125,6 +145,7 @@ const Single = ({route, navigation}) => {
             resizeMode="contain"
             shouldPlay={true}
             isLooping
+            ref={videoRef}
           ></Video>
         )}
 
