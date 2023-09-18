@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Text} from 'react-native';
+import {ScrollView, Text} from 'react-native';
 import {PropTypes} from 'prop-types';
 import {mediaUrl} from '../utils/app-config';
 import {Button, Card, Icon, Image, ListItem} from '@rneui/themed';
@@ -7,6 +7,7 @@ import {Video} from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useFavourite, useUser} from '../hook/ApiHooks';
 import {MainContext} from '../contexts/MainContext';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const Single = ({route, navigation}) => {
   const [owner, setOwner] = useState({});
@@ -74,55 +75,87 @@ const Single = ({route, navigation}) => {
     }
   };
 
-  useEffect(() => {
-    fetchOwner();
-    fetchLikes();
-  }, []);
-  return (
-    <Card containerStyle={{width: '100%', margin: 'auto'}}>
-      {mediaType === 'image' ? (
-        <Image
-          source={{
-            uri: mediaUrl + filename,
-          }}
-          containerStyle={{width: '100%', height: 325}}
-        ></Image>
-      ) : (
-        <Video
-          source={{uri: mediaUrl + filename}}
-          style={{height: 300}}
-          useNativeControls
-          resizeMode="contain"
-          shouldPlay={true}
-          isLooping
-        ></Video>
-      )}
+  // fullscreen video on landscape
+  const unlockOrientation = async () => {
+    try {
+      await ScreenOrientation.unlockAsync();
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
-      <ListItem>
-        <Icon name="chat"></Icon>
-        <Text>{title}</Text>
-      </ListItem>
-      <ListItem>
-        <Icon name="list"></Icon>
-        <Text>Description: {description}</Text>
-      </ListItem>
-      <ListItem>
-        <Icon name="event"></Icon>
-        <Text>Uploaded: {timeAdded.slice(0, -14)}</Text>
-      </ListItem>
-      <ListItem>
-        <Icon name="person"></Icon>
-        <Text>{owner.username}</Text>
-      </ListItem>
-      <ListItem>
-        {userLike ? (
-          <Button onPress={removeFavourite}>Remove like</Button>
+  const lockOrientation = async () => {
+    try {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP,
+      );
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    unlockOrientation();
+    fetchOwner();
+
+    return () => {
+      lockOrientation();
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchLikes();
+  }, [userLike]);
+
+  return (
+    <ScrollView>
+      <Card containerStyle={{width: '100%', margin: 'auto'}}>
+        {mediaType === 'image' ? (
+          <Image
+            source={{
+              uri: mediaUrl + filename,
+            }}
+            containerStyle={{width: '100%', height: 325}}
+          ></Image>
         ) : (
-          <Button onPress={createFavourite}>Like</Button>
+          <Video
+            source={{uri: mediaUrl + filename}}
+            style={{height: 300}}
+            useNativeControls
+            resizeMode="contain"
+            shouldPlay={true}
+            isLooping
+          ></Video>
         )}
-        <Text>Total likes: {likes.length}</Text>
-      </ListItem>
-    </Card>
+
+        <ListItem>
+          <Icon name="chat"></Icon>
+          <Text>{title}</Text>
+        </ListItem>
+        <ListItem>
+          <Icon name="list"></Icon>
+          <Text>Description: {description}</Text>
+        </ListItem>
+        <ListItem>
+          <Icon name="event"></Icon>
+          <Text>Uploaded: {timeAdded.slice(0, -14)}</Text>
+        </ListItem>
+        <ListItem>
+          <Icon name="person"></Icon>
+          <Text>{owner.username}</Text>
+        </ListItem>
+        <ListItem>
+          <Text>Total likes: {likes.length}</Text>
+        </ListItem>
+        <ListItem>
+          {userLike ? (
+            <Button onPress={removeFavourite}>Remove like</Button>
+          ) : (
+            <Button onPress={createFavourite}>Like</Button>
+          )}
+        </ListItem>
+      </Card>
+    </ScrollView>
   );
 };
 
