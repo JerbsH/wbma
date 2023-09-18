@@ -112,7 +112,7 @@ const Single = ({route, navigation}) => {
     const orientSub = ScreenOrientation.addOrientationChangeListener(
       (event) => {
         if (event.orientationInfo.orientation > 2) {
-          showVideoInFullscreen();
+          videoRef.current && showVideoInFullscreen();
         }
       },
     );
