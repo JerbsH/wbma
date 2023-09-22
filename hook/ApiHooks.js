@@ -1,22 +1,28 @@
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {apiUrl, appId} from '../utils/app-config';
 import {doFetch} from '../utils/functions';
+import {MainContext} from '../contexts/MainContext';
 
-const useMedia = (update) => {
+const useMedia = (update, myFilesOnly) => {
+  const {user} = useContext(MainContext);
   const [mediaArray, setMediaArray] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const loadMedia = async () => {
+  const loadMedia = async (userId) => {
     try {
+      let json;
+      if (userId) {
+        json = await doFetch(apiUrl + 'media/user/' + userId);
+      } else {
+        // files with id
+        json = await doFetch(apiUrl + 'tags/' + appId);
+        json.reverse();
+      }
       // all media files
       // const json = await doFetch(apiUrl + 'media');
-
-      // files with id
-      const json = await doFetch(apiUrl + 'tags/' + appId);
       const mediaFiles = await Promise.all(
         json.map(async (item) => {
           const fileData = await doFetch(apiUrl + 'media/' + item.file_id);
-          // console.log('filedata ' + fileData);
           return fileData;
         }),
       );
@@ -28,7 +34,7 @@ const useMedia = (update) => {
   };
 
   useEffect(() => {
-    loadMedia();
+    loadMedia(myFilesOnly ? user.user_id : 0);
   }, [update]);
 
   const postMedia = async (mediaData, token) => {
@@ -48,7 +54,20 @@ const useMedia = (update) => {
     }
   };
 
-  return {mediaArray, postMedia, loading};
+  const deleteMedia = async (fileId, token) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {'x-access-token': token},
+      };
+      const deleteResult = await doFetch(apiUrl + 'media/' + fileId, options);
+      return deleteResult;
+    } catch (error) {
+      throw new Error('deleteMedia failed ' + error.message);
+    }
+  };
+
+  return {mediaArray, postMedia, loading, deleteMedia};
 };
 
 const useAuthentication = () => {

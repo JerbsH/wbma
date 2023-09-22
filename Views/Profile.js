@@ -6,8 +6,9 @@ import {mediaUrl} from '../utils/app-config';
 import {Button, Card, Icon, ListItem} from '@rneui/themed';
 import ProfileForm from '../components/ProfileForm';
 import {ScrollView} from 'react-native';
+import {PropTypes} from 'prop-types';
 
-const Profile = (props) => {
+const Profile = ({navigation}) => {
   const [avatar, setAvatar] = useState('http://placekitten.com/640');
   const {getFilesByTag} = useTag();
   const {setIsLoggedIn, user} = useContext(MainContext);
@@ -49,17 +50,35 @@ const Profile = (props) => {
           </ListItem>
           <Card.Divider></Card.Divider>
           <Button
-            title="Log out!"
+            onPress={() => {
+              navigation.navigate('My files');
+            }}
+            buttonStyle={{
+              borderRadius: 10,
+              marginBottom: 5,
+            }}
+          >
+            My files
+            <Icon name="storage"></Icon>
+          </Button>
+          <Button
             onPress={logOut}
             buttonStyle={{
               borderRadius: 10,
             }}
-          ></Button>
+          >
+            Log Out
+            <Icon name="logout"></Icon>
+          </Button>
           <ProfileForm user={user} />
         </Card>
       </ScrollView>
     </>
   );
+};
+
+Profile.propTypes = {
+  navigation: PropTypes.object,
 };
 
 export default Profile;
