@@ -2,8 +2,15 @@ import PropTypes from 'prop-types';
 import {mediaUrl} from '../utils/app-config';
 import {Avatar, Button, ListItem as RNEListItem} from '@rneui/themed';
 import {Alert} from 'react-native';
+import {useMedia} from '../hook/ApiHooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useContext} from 'react';
+import {MainContext} from '../contexts/MainContext';
 
 const ListItem = ({singleMedia, navigation, userId}) => {
+  const {deleteMedia} = useMedia();
+  const {update, setUpdate} = useContext(MainContext);
+
   const deleteFile = async () => {
     Alert.alert(
       'Delete',
@@ -21,8 +28,10 @@ const ListItem = ({singleMedia, navigation, userId}) => {
           onPress: async () => {
             console.log('deleting file', singleMedia.file_id);
             try {
-              // TODO: use useMedia hook to delete files 
-              await deleteMedia();
+              const token = await AsyncStorage.getItem('userToken');
+              const result = await deleteMedia(singleMedia.file_id, token);
+              console.log('file deleted ', result);
+              setUpdate(!update);
             } catch (error) {
               console.error(error.message);
             }
@@ -33,6 +42,7 @@ const ListItem = ({singleMedia, navigation, userId}) => {
   };
 
   const modifyFile = async () => {
+    navigation.navigate('Modify file', singleMedia);
     console.log('modify');
   };
 
@@ -57,9 +67,7 @@ const ListItem = ({singleMedia, navigation, userId}) => {
                 borderRadius: 30,
               }}
               onPress={modifyFile}
-            >
-              Modify
-            </Button>
+            ></Button>
             <Button
               title={'Delete'}
               buttonStyle={{
